@@ -28,6 +28,7 @@ public class MarioController : MonoBehaviour {
 		if (controller.isGrounded) {
 			currentFloorPos = transform.position.y;
 			moveDirection = new Vector3 (Input.GetAxis ("Horizontal"), 0, Input.GetAxis ("Vertical"));
+			moveDirection.Normalize();
 			moveDirection = transform.TransformDirection (moveDirection);
 			moveDirection *= speed;
 			if (Input.GetButton ("Jump"))
