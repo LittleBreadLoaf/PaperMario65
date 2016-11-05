@@ -6,9 +6,10 @@ public class MarioController : MonoBehaviour {
 	private CharacterController controller;
 	private Animator animator;
 	private SpriteRenderer renderer;
-	public float speed = 2.0F;
-	public float jumpSpeed = 5.0F;
-	public float gravity = 20.0F;
+	public static float speed = 2.0F;
+	public static float jumpSpeed = 5.0F;
+	public static float gravity = 20.0F;
+	public static float currentFloorPos = 0.275F;
 	private bool isRunning = false;
 	private bool updateFlip = false;
 	private Vector3 moveDirection = Vector3.zero;
@@ -25,6 +26,7 @@ public class MarioController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (controller.isGrounded) {
+			currentFloorPos = transform.position.y;
 			moveDirection = new Vector3 (Input.GetAxis ("Horizontal"), 0, Input.GetAxis ("Vertical"));
 			moveDirection = transform.TransformDirection (moveDirection);
 			moveDirection *= speed;
