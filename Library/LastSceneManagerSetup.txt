@@ -1,0 +1,4 @@
+sceneSetups:
+- path: Assets/Paper_Mario.unity
+  isLoaded: 1
+  isActive: 1
