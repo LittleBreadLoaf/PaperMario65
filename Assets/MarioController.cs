@@ -28,6 +28,7 @@ public class MarioController : MonoBehaviour {
 		if (controller.isGrounded) {
 			currentFloorPos = transform.position.y;
 			moveDirection = new Vector3 (Input.GetAxis ("Horizontal"), 0, Input.GetAxis ("Vertical"));
+			isRunning = (Mathf.Abs(Input.GetAxis ("Horizontal")) + Mathf.Abs(Input.GetAxis ("Vertical"))) == 0.0 ? false : true; 
 			moveDirection.Normalize();
 			moveDirection = transform.TransformDirection (moveDirection);
 			moveDirection *= speed;
@@ -38,7 +39,6 @@ public class MarioController : MonoBehaviour {
 		updateFlip = Input.GetAxis ("Horizontal") == 0 ? false : true;
 		if(updateFlip)
 			renderer.flipX = Input.GetAxis ("Horizontal") > 0 ? true : false;
-		isRunning = (Mathf.Abs(moveDirection.x) + Mathf.Abs(moveDirection.z)) * speed == 0.0 ? false : true; 
 		moveDirection.y -= gravity * Time.deltaTime;
 		controller.Move(moveDirection * Time.deltaTime);
 		animator.SetBool ("isRunning", isRunning);

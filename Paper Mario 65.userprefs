@@ -1,10 +1,11 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/MarioController.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/GoombaController.cs">
     <Files>
-      <File FileName="Assets/MarioController.cs" Line="18" Column="6" />
-      <File FileName="Assets/KoopaController.cs" Line="1" Column="1" />
+      <File FileName="Assets/GoombaController.cs" Line="19" Column="26" />
       <File FileName="Assets/IdleMarioBehavior.cs" Line="1" Column="1" />
+      <File FileName="Assets/MarioController.cs" Line="5" Column="1" />
+      <File FileName="Assets/CameraController.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
