@@ -13,6 +13,7 @@ public class MarioController : MonoBehaviour {
 	private bool isRunning = false;
 	private bool updateFlip = false;
 	private Vector3 moveDirection = Vector3.zero;
+	private float yVelocity = 0;
 	// Use this for initialization
 	void Start () {
 		controller = GetComponent<CharacterController>();
@@ -25,28 +26,36 @@ public class MarioController : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+		
+		moveDirection = new Vector3 (Input.GetAxisRaw ("Horizontal"), 0, Input.GetAxisRaw ("Vertical"));
+		moveDirection.Normalize ();
+		moveDirection = transform.TransformDirection (moveDirection);
+
 		if (controller.isGrounded) {
+			yVelocity = -0.1F;
 			currentFloorPos = transform.position.y;
-			moveDirection = new Vector3 (Input.GetAxis ("Horizontal"), 0, Input.GetAxis ("Vertical"));
-			isRunning = (Mathf.Abs(Input.GetAxis ("Horizontal")) + Mathf.Abs(Input.GetAxis ("Vertical"))) == 0.0 ? false : true; 
-			moveDirection.Normalize();
-			moveDirection = transform.TransformDirection (moveDirection);
+			isRunning = (Mathf.Abs (Input.GetAxisRaw ("Horizontal")) + Mathf.Abs (Input.GetAxisRaw ("Vertical"))) == 0.0 ? false : true; 
 			moveDirection *= speed;
 			if (Input.GetButton ("Jump"))
-				moveDirection.y = jumpSpeed;
-
+				yVelocity = jumpSpeed;
+			if(Input.GetKeyDown (KeyCode.E))
+				animator.SetBool ("Hammer", true);
+		} else {
+			moveDirection *= (1.0F * speed);
+			yVelocity -= gravity * Time.deltaTime;
 		}
+		
+		moveDirection.y = yVelocity;
+		controller.Move(moveDirection * Time.deltaTime);
+
 		updateFlip = Input.GetAxis ("Horizontal") == 0 ? false : true;
 		if(updateFlip)
 			renderer.flipX = Input.GetAxis ("Horizontal") > 0 ? true : false;
-		moveDirection.y -= gravity * Time.deltaTime;
-		controller.Move(moveDirection * Time.deltaTime);
 		animator.SetBool ("isRunning", isRunning);
 		animator.SetFloat ("yVelocity", moveDirection.y);
 		animator.SetBool ("Backwards", Input.GetAxis ("Vertical") > 0 ? true : false);
 		animator.SetBool ("onGround", controller.isGrounded);
-		if(Input.GetKeyDown (KeyCode.E))
-			animator.SetBool ("Hammer", true);
+
 
 	}
 }
