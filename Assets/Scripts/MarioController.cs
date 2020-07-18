@@ -26,6 +26,12 @@ public class MarioController : MonoBehaviour
     public Material mat;
     private GameObject shape;
 
+    // Fields for scene transitions
+    public VectorValue startingLocation;
+    public VectorValue walkToLocation;
+    private Vector3 initialWalk = Vector3.zero;
+    public static bool sceneStarted;
+
     // Use this for initialization
     void Start()
     {
@@ -33,6 +39,18 @@ public class MarioController : MonoBehaviour
         animator = GetComponent<Animator>();
         renderer = GetComponent<SpriteRenderer>();
         collisionBox = GetComponent<BoxCollider>();
+
+        sceneStarted = false;
+        transform.position = startingLocation.initialValue;
+        initialWalk.x = (float)(walkToLocation.initialValue.x - startingLocation.initialValue.x) / 5;
+        initialWalk.z = (float)(walkToLocation.initialValue.z - startingLocation.initialValue.z) / 5;
+        // No matter what, start the scene after 2 seconds.
+        Invoke("StartScene", 2);
+    }
+
+    void StartScene()
+    {
+        sceneStarted = true;
     }
 
     void FixedUpdate()
@@ -42,23 +60,28 @@ public class MarioController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        HitCheck();
-
-        //Will likely need to make this it's own script, or at least move most of the logic out of Update()
-        if(playerControl)
+        if (sceneStarted)
         {
-            Move(Input.GetAxisRaw("Vertical"), Input.GetAxisRaw("Horizontal"));
+            HitCheck();
 
-            if (Input.GetKeyDown(KeyCode.E) && controller.isGrounded)
+            //Will likely need to make this it's own script, or at least move most of the logic out of Update()
+            if (playerControl)
             {
-                animator.SetBool("Hammer", true);
-                StartCoroutine(SetMarioControl(false, true, GetAnimationClipLength("Hammer")));
+                Move(Input.GetAxisRaw("Vertical"), Input.GetAxisRaw("Horizontal"));
 
-
+                if (Input.GetKeyDown(KeyCode.E) && controller.isGrounded)
+                {
+                    animator.SetBool("Hammer", true);
+                    StartCoroutine(SetMarioControl(false, true, GetAnimationClipLength("Hammer")));
+                }
 
             }
-                
+        } else
+        {
+            Debug.Log(walkToLocation.initialValue);
+            Move(initialWalk.z, initialWalk.x);
+            if (transform.position.x - walkToLocation.initialValue.x < 0.05 && transform.position.z - walkToLocation.initialValue.z < 0.05)
+                sceneStarted = true;
         }
     }
 
@@ -72,7 +95,7 @@ public class MarioController : MonoBehaviour
         {
             yVelocity = -0.1F;
             currentFloorPos = transform.position.y;
-            isRunning = (Mathf.Abs(Input.GetAxisRaw("Horizontal")) + Mathf.Abs(Input.GetAxisRaw("Vertical"))) == 0.0 ? false : true;
+            isRunning = (controller.velocity.x == 0.0 && controller.velocity.z == 0.0) ? false : true;
             moveDirection *= speed;
             if (Input.GetButton("Jump"))
                 yVelocity = jumpSpeed;
@@ -101,8 +124,8 @@ public class MarioController : MonoBehaviour
 
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        //TODO: Change this to be the "Enemy" superclass, pass in params for battle.
-        //Maybe move this logic into that enemy superclass
+        // TODO: Change this to be the "Enemy" superclass, pass in params for battle.
+        // Maybe move this logic into that enemy superclass
         if (hit.gameObject.name.Equals("Goomba"))
         {
             Debug.Log("Touched a Goombs");
@@ -115,18 +138,18 @@ public class MarioController : MonoBehaviour
         return playerControl;
     }
 
-    //Coroutine to add in a delay variable
+    // Coroutine to add in a delay variable
     IEnumerator SetMarioControl(bool state, bool isAttackAnim, float delay)
     {
-        //Remove player control
+        // Remove player control
         playerControl = state;
         if (isAttackAnim)
             playerAttacking = true;
 
-        //Wait for delay-length of time
+        // Wait for delay-length of time
         yield return new WaitForSeconds(delay);
 
-        //Return player control
+        // Return player control
         playerControl = !state;
         if (isAttackAnim)
             playerAttacking = false;
